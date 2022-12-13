@@ -11,7 +11,7 @@ spring:
       password: root
   #Redis相关配置
   redis:
-    host: localhost
+    host: 47.100.42.2
     port: 6379
     password: 123456
     database: 0 #操作的是0号数据库
