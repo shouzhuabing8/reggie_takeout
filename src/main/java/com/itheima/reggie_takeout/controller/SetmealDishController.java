@@ -15,6 +15,8 @@ import com.itheima.reggie_takeout.service.impl.SetmealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +41,7 @@ public class SetmealDishController{
      * @return
      */
     @PostMapping
+    @CacheEvict(value = "setmealCache",allEntries = true)
     public R<String> save (@RequestBody SetmealDto setmealDto){
 
         setmealService.saveWithDish(setmealDto);
@@ -93,6 +96,7 @@ public class SetmealDishController{
     }
 
     @GetMapping("/list")
+    @Cacheable(value = "setmealCache",key = "#categoryId+'_'+#status")
     public R<List<Setmeal>> list(@RequestParam Long categoryId , @RequestParam int status){
         //
         //条件构造
@@ -109,6 +113,7 @@ public class SetmealDishController{
     }
 
     @DeleteMapping
+    @CacheEvict(value = "setmealCache",allEntries = true)
     public R<String> delete (@RequestParam List<Long> ids){
         /*//批量起售和停售都是前端做的，批量删除是后端做的
         if (ids == null) {
@@ -135,6 +140,7 @@ public class SetmealDishController{
     }
 
     @PostMapping("/status/{status}")
+    @CacheEvict(value = "setmealCache",allEntries = true)
     public R<String> updateStatus (@PathVariable int status,@RequestParam List<Long> ids){
         for (Setmeal setmeal : setmealService.listByIds(ids)) {
             setmeal.setStatus(status);
